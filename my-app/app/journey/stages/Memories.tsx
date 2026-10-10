@@ -22,7 +22,7 @@ export function Memories({ next }: { next: () => void }) {
 
   return (
     <div className="center-col">
-      <Kicker>Chapter three · Memory lane</Kicker>
+      <Kicker>Chapter four · Memory lane</Kicker>
       <Title>Us, in pictures</Title>
       <Sub>⚠️ Warning: extremely cute content ahead. Swipe (or tap) through.</Sub>
 

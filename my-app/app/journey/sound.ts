@@ -194,6 +194,38 @@ export const sfx = {
     noise({ dur: 0.9, vol: 0.3, filter: "lowpass", freq: 900, freqTo: 120 });
     tone(80, { dur: 0.4, vol: 0.25, slideTo: 40 });
   },
+  trumpet() {
+    const { ac, out } = audio();
+    const t = ac.currentTime;
+    const osc = ac.createOscillator();
+    const lfo = ac.createOscillator();
+    const lfoG = ac.createGain();
+    const f = ac.createBiquadFilter();
+    const g = ac.createGain();
+    osc.type = "sawtooth";
+    osc.frequency.setValueAtTime(260, t);
+    osc.frequency.exponentialRampToValueAtTime(620, t + 0.25);
+    osc.frequency.exponentialRampToValueAtTime(480, t + 0.7);
+    lfo.frequency.value = 7;
+    lfoG.gain.value = 22;
+    lfo.connect(lfoG).connect(osc.frequency);
+    f.type = "bandpass";
+    f.frequency.value = 1200;
+    f.Q.value = 2;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.4, t + 0.06);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.8);
+    osc.connect(f).connect(g).connect(out);
+    osc.start(t);
+    lfo.start(t);
+    osc.stop(t + 0.85);
+    lfo.stop(t + 0.85);
+  },
+  rimshot() {
+    tone(220, { dur: 0.12, vol: 0.3, type: "triangle", slideTo: 140 });
+    tone(160, { start: 0.16, dur: 0.14, vol: 0.32, type: "triangle", slideTo: 100 });
+    noise({ start: 0.34, dur: 0.7, vol: 0.18, filter: "highpass", freq: 6000 });
+  },
   message() {
     tone(880, { dur: 0.12, vol: 0.12, type: "triangle" });
     tone(1320, { start: 0.08, dur: 0.18, vol: 0.1, type: "triangle" });

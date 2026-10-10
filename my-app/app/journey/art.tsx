@@ -107,6 +107,128 @@ export function Duck({
   );
 }
 
+/** A small grey elephant, front-facing. `mic` curls the trunk around a microphone. */
+export function Elephant({
+  size = 160,
+  mic,
+  bowtie,
+  hat,
+  sweat,
+  className,
+}: {
+  size?: number;
+  mic?: boolean;
+  bowtie?: boolean;
+  hat?: boolean;
+  sweat?: boolean;
+  className?: string;
+}) {
+  const gid = `ele${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 200 200"
+      className={className}
+      style={{ overflow: "visible" }}
+      aria-hidden
+    >
+      <defs>
+        <radialGradient id={gid} cx="42%" cy="35%" r="75%">
+          <stop offset="0%" stopColor="#E4E9F3" />
+          <stop offset="55%" stopColor="#B4BED0" />
+          <stop offset="100%" stopColor="#8794AD" />
+        </radialGradient>
+      </defs>
+      <ellipse cx="100" cy="192" rx="62" ry="7" fill="#000" opacity="0.14" />
+      {/* body + legs */}
+      <ellipse cx="100" cy="150" rx="52" ry="38" fill={`url(#${gid})`} />
+      {[66, 88, 112, 134].map((x) => (
+        <g key={x}>
+          <rect x={x - 11} y="160" width="22" height="30" rx="10" fill={`url(#${gid})`} />
+          <path d={`M${x - 7} 188 h4 M${x - 2} 188 h4 M${x + 3} 188 h4`} stroke="#F4F1EA" strokeWidth="3" strokeLinecap="round" />
+        </g>
+      ))}
+      {/* ears */}
+      {[
+        { cx: 52, o: 0.9 },
+        { cx: 148, o: 0.1 },
+      ].map((e, i) => (
+        <motion.g
+          key={i}
+          style={{ originX: e.o, originY: 0.4 }}
+          animate={{ rotate: i ? [0, 10, 0] : [0, -10, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <ellipse cx={e.cx} cy="82" rx="38" ry="44" fill={`url(#${gid})`} />
+          <ellipse cx={e.cx + (i ? 4 : -4)} cy="84" rx="25" ry="31" fill="#FFB8C9" opacity="0.8" />
+        </motion.g>
+      ))}
+      {/* head */}
+      <circle cx="100" cy="80" r="46" fill={`url(#${gid})`} />
+      {/* smile */}
+      <path d="M78 102 Q84 112 92 106" stroke="#5B4A6E" strokeWidth="3" fill="none" strokeLinecap="round" />
+      {/* cheeks */}
+      <ellipse cx="72" cy="94" rx="8" ry="5" fill="#FF8FAB" opacity="0.6" />
+      <ellipse cx="128" cy="94" rx="8" ry="5" fill="#FF8FAB" opacity="0.6" />
+      {/* eyes */}
+      <motion.g
+        style={{ originX: 0.5, originY: 0.5 }}
+        animate={{ scaleY: [1, 1, 0.1, 1, 1] }}
+        transition={{ duration: 4.5, repeat: Infinity, times: [0, 0.9, 0.93, 0.96, 1] }}
+      >
+        <ellipse cx="84" cy="74" rx="6" ry="8" fill="#2B1B3F" />
+        <ellipse cx="116" cy="74" rx="6" ry="8" fill="#2B1B3F" />
+        <circle cx="86" cy="71" r="2.3" fill="#fff" />
+        <circle cx="118" cy="71" r="2.3" fill="#fff" />
+      </motion.g>
+      {/* trunk */}
+      <motion.g
+        style={{ originX: 0.5, originY: 0 }}
+        animate={{ rotate: mic ? [0, -3, 0] : [0, 6, 0] }}
+        transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <path
+          d={mic ? "M100 92 C100 118 112 130 128 124 C138 120 142 110 138 100" : "M100 92 C98 120 104 138 120 140 C130 141 134 132 128 126"}
+          stroke="#A3AEC4"
+          strokeWidth="17"
+          strokeLinecap="round"
+          fill="none"
+        />
+        <path d="M94 104 h11 M95 113 h11 M98 122 h10" stroke="#8794AD" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
+        {mic && (
+          <g transform="translate(140 92) rotate(18)">
+            <rect x="-3.5" y="0" width="7" height="22" rx="3" fill="#2B2B3A" />
+            <circle r="10" fill="#4A4A5E" />
+            <path d="M-7 -4 h14 M-8 1 h16 M-6 6 h12" stroke="#7B7B92" strokeWidth="1.6" />
+          </g>
+        )}
+      </motion.g>
+      {bowtie && (
+        <g transform="translate(100 128)">
+          <path d="M0 0 L-16 -10 L-16 10 Z M0 0 L16 -10 L16 10 Z" fill="#FF5C8A" />
+          <circle r="5" fill="#E63E6D" />
+        </g>
+      )}
+      {hat && (
+        <g transform="rotate(12 120 30)">
+          <path d="M98 42 L122 -10 L146 42 Z" fill="#7AE7C7" />
+          <path d="M104 28 L140 28 M110 14 L134 14" stroke="#FF5C8A" strokeWidth="5" />
+          <circle cx="122" cy="-12" r="8" fill="#FFD43B" />
+        </g>
+      )}
+      {sweat && (
+        <motion.path
+          d="M140 50 C136 58 136 64 140 64 C144 64 144 58 140 50 Z"
+          fill="#7FD1F7"
+          animate={{ y: [0, 14], opacity: [1, 0] }}
+          transition={{ duration: 1, repeat: Infinity }}
+        />
+      )}
+    </svg>
+  );
+}
+
 const PETAL_SHAPES = {
   round: "M0 0 C-14 -14 -14 -40 0 -46 C14 -40 14 -14 0 0 Z",
   pointy: "M0 0 C-10 -18 -8 -38 0 -52 C8 -38 10 -18 0 0 Z",

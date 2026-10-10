@@ -30,7 +30,7 @@ export function Gift({ next }: { next: () => void }) {
       <AnimatePresence mode="wait">
         {!open ? (
           <motion.div key="closed" className="center-col" exit={{ opacity: 0, scale: 1.3 }}>
-            <Kicker>Chapter five · The gift</Kicker>
+            <Kicker>Chapter six · The gift</Kicker>
             <Title>A present, just for you</Title>
             <Sub>Tap the box to open it. (It might take a few tries. It&apos;s shy.)</Sub>
             <motion.button

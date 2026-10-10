@@ -8,6 +8,7 @@ import { Door } from "./stages/Door";
 import { Scan } from "./stages/Scan";
 import { Pond } from "./stages/Pond";
 import { Garden } from "./stages/Garden";
+import { Comedy } from "./stages/Comedy";
 import { Memories } from "./stages/Memories";
 import { Cake } from "./stages/Cake";
 import { Gift } from "./stages/Gift";
@@ -29,6 +30,7 @@ const CHAPTERS: {
   { icon: "🔍", label: "Verification", sky: "linear-gradient(180deg,#150d36 0%,#3a1d63 60%,#7a3a83 100%)", dark: true, ambient: "stars", Stage: Scan },
   { icon: "🦆", label: "The pond", sky: "linear-gradient(180deg,#ffd9c4 0%,#ffc2b4 35%,#b8dcf0 100%)", dark: false, ambient: "clouds", Stage: Pond },
   { icon: "🌷", label: "The garden", sky: "linear-gradient(180deg,#e6f6ff 0%,#f4fbe9 55%,#fff1d8 100%)", dark: false, ambient: "petals", Stage: Garden },
+  { icon: "🐘", label: "Comedy club", sky: "linear-gradient(180deg,#2a0b2e 0%,#4a1340 55%,#7a2a4f 100%)", dark: true, ambient: "bokeh", Stage: Comedy },
   { icon: "📸", label: "Memories", sky: "linear-gradient(180deg,#ffe7c2 0%,#ffc9a3 50%,#ff9f95 100%)", dark: false, ambient: "bokeh", Stage: Memories },
   { icon: "🎂", label: "The wish", sky: "linear-gradient(180deg,#ff9f8f 0%,#c46bd2 50%,#341a5c 100%)", dark: true, ambient: "fireflies", Stage: Cake },
   { icon: "🎁", label: "The gift", sky: "linear-gradient(180deg,#12062a 0%,#35115a 60%,#5a1a6b 100%)", dark: true, ambient: "stars", Stage: Gift },

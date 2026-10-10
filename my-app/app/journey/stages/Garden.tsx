@@ -97,7 +97,7 @@ export function Garden({ next }: { next: () => void }) {
               <br />
               <small>(Cheesy? Yes. True? Also yes.)</small>
             </p>
-            <Btn onClick={next}>Walk down memory lane →</Btn>
+            <Btn onClick={next}>Take your seat at the comedy club 🎤 →</Btn>
           </motion.div>
         )}
       </AnimatePresence>

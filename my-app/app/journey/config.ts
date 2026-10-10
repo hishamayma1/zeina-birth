@@ -30,6 +30,8 @@ export const config = {
     { label: "Scanning for cuteness", result: "off the charts" },
     { label: "Checking that smile", result: "dangerously beautiful" },
     { label: "Counting ducks owned", result: "never enough" },
+    { label: "Detecting elephant obsession", result: "severe. incurable. adorable 🐘" },
+    { label: "Testing sense of humor", result: "funnier than Hisham (ouch)" },
     { label: "Measuring how much Hisham loves you", result: "error: number too big" },
     { label: "Calculating age", result: "classified… just kidding" },
   ],
@@ -40,6 +42,7 @@ export const config = {
     "I'm just a duck, and even I can see Hisham is crazy lucky to have you.",
     "Fun fact: ducks are cute. You're cuter. The ducks have filed a complaint.",
     "Your laugh is Hisham's favorite sound. Second place: QUACK.",
+    "We ducks know you secretly prefer elephants. We're not mad. We're just… smaller.",
     "Happy birthday Zaina! May your year be as smooth as a duck on a calm lake 🦆",
   ],
 
@@ -52,6 +55,31 @@ export const config = {
     "You're my safe place. Always.",
     "You laugh at my jokes. Even the bad ones. Especially the bad ones.",
   ],
+
+  /**
+   * The comedy club — Peanut the elephant does stand-up for her.
+   * Each joke: q (setup) and a (punchline).
+   */
+  elephant: {
+    name: "Peanut",
+    jokes: [
+      { q: "Why do elephants never use computers?", a: "They're terrified of the mouse." },
+      { q: "Why are elephants so wrinkly?", a: "Have you ever tried to iron one?" },
+      { q: "How do you know an elephant was in your fridge?", a: "Footprints in the birthday cake. Sorry. I was hungry." },
+      { q: "What do elephants say when they bump into each other?", a: "Small world, isn't it?" },
+      { q: "Why don't elephants ever forget a birthday?", a: "Because Hisham would never hear the end of it." },
+      { q: "What's huge, grey, and thinks Zaina is the funniest person alive?", a: "Me. And Hisham. We have a group chat about it." },
+    ],
+    /** Peanut's comebacks when she boos. */
+    boos: [
+      "Tough crowd. I was warned you're the funny one here.",
+      "Booing an elephant? On HIS birthday… oh wait, it's yours. Carry on.",
+      "That one was Hisham's joke. Boo him.",
+      "I'm not crying, my trunk is just leaking.",
+      "Elephants never forget. I will remember this boo forever.",
+      "Okay, fine, I'll stick to my day job. (Being cute.)",
+    ],
+  },
 
   /**
    * Chapter 4 — photos. Put your images in public/photos/ with these names
@@ -68,7 +96,7 @@ export const config = {
 
   /**
    * Hisham talks to her in every chapter (a little chat bubble in the corner).
-   * One list per chapter, in order: door, scan, pond, garden, memories, cake, gift, letter.
+   * One list per chapter, in order: door, scan, pond, garden, comedy club, memories, cake, gift, letter.
    * Put your face at public/photos/hisham.jpg for the avatar.
    */
   hisham: {
@@ -93,6 +121,11 @@ export const config = {
         "I planted these with my own hands. (Digitally. My hands are clean.)",
         "Warning: only 6 reasons fit here. The full list needs a bigger garden… like a planet 🌍",
         "You're the prettiest flower in this garden. Don't tell the flowers 🤫",
+      ],
+      [
+        "Tonight's special guest: Peanut the elephant 🐘 Yes, I know about your elephant obsession. I know everything.",
+        "He flew in just for you. Economy class. It was very tight for him.",
+        "Go easy on him. He's only the second-funniest person you know. You're first 😌",
       ],
       [
         "Every photo here is my favorite. Yes, all of them. That's how it works.",
@@ -127,6 +160,8 @@ export const config = {
       "Did you drink water today? Drink water. I love you.",
       "Hisham fact #1: thinks about you way too much.",
       "I'd choose you in every lifetime. Even the one where I'm a duck 🦆",
+      "If you were an elephant you'd still be the cutest elephant. I've thought about this a lot 🐘",
+      "You're the only person who makes me laugh until I snort. Like a tiny elephant.",
       "Stop tapping my face 😳 …okay, keep going.",
     ],
   },
@@ -140,15 +175,16 @@ export const config = {
       "Best birthday ever!!! 🎂",
       "Quack quack 🦆 (that means thank you)",
       "You're stuck with me forever, Hisham",
+      "Peanut was funnier than you 🐘",
     ],
   },
 
   /** Chapter 7 — the letter. Each string is a paragraph. */
   letter: [
     "My dearest Zaina,",
-    "Happy birthday to the girl who makes my whole world softer, brighter, and a lot more full of ducks.",
-    "Every year with you feels like a gift I didn't know I was allowed to have. You make me laugh when I'm tired, you make me braver when I'm scared, and you make me want to be better just by being you.",
-    "I hope this year gives you everything you've been wishing for — and I promise to be right there for all of it: the big moments, the small ones, and the random 2 a.m. duck videos.",
+    "Happy birthday to the girl who makes my whole world softer, brighter, and a lot more full of ducks (and, yes, elephants).",
+    "Every year with you feels like a gift I didn't know I was allowed to have. You're the funniest person I know — you make me laugh when I'm tired, you make me braver when I'm scared, and you make me want to be better just by being you.",
+    "I hope this year gives you everything you've been wishing for — and I promise to be right there for all of it: the big moments, the small ones, and the random 2 a.m. duck videos, and every elephant video you send me at 3 a.m.",
     "I love you. Today, tomorrow, and every 15th of October after this one.",
   ],
 } as const;

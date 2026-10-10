@@ -86,7 +86,7 @@ export function Cake({ next }: { next: () => void }) {
 
   return (
     <div className="center-col">
-      <Kicker>Chapter four · The wish</Kicker>
+      <Kicker>Chapter five · The wish</Kicker>
       <Title>Close your eyes &amp; make a wish 🌠</Title>
       <Sub>Then blow out the candles — tap each flame, or actually blow into your mic!</Sub>
 
