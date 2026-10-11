@@ -7,64 +7,46 @@ import { config } from "../config";
 import { sfx } from "../sound";
 import { Btn, Kicker, Sub, Title } from "../ui";
 
-const AGE = new Date(`${config.celebrationDate}T00:00:00`).getFullYear() - new Date(`${config.birthDate}T00:00:00`).getFullYear();
-const [Y, M, D] = config.celebrationDate.split("-");
-
-type Phase = "pick" | "edit" | "sent";
+type Phase = "pick" | "edit" | "sent" | "manual";
 
 export function Reply({ next }: { next: () => void }) {
   const [phase, setPhase] = useState<Phase>("pick");
-  const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
+  const [photo, setPhoto] = useState<{ file: File; url: string } | null>(null);
   const [msg, setMsg] = useState("");
-  const [card, setCard] = useState<{ file: File; url: string } | null>(null);
-  const [via, setVia] = useState<"share" | "whatsapp">("share");
+  // Her photo uploads in the background while she types, so "send" can jump
+  // straight into Hisham's WhatsApp chat with the photo link already in the message.
+  const [link, setLink] = useState<string | null | undefined>(undefined);
+  const [sending, setSending] = useState(false);
+  const uploadRef = useRef<Promise<string | null> | null>(null);
   const camRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
 
-  const text = `${msg.trim() || "💛"}\n\n— ${config.name} 🎂`;
-  const waUrl = `https://wa.me/${config.reply.whatsapp}?text=${encodeURIComponent(text)}`;
+  const text = (photoLink?: string | null) =>
+    [msg.trim() || "💛", photoLink && `📸 ${photoLink}`, `— ${config.name} 🎂`].filter(Boolean).join("\n\n");
+  // api.whatsapp.com rather than wa.me: wa.me's redirect turns emoji into "�".
+  const waUrl = (photoLink?: string | null) =>
+    `https://api.whatsapp.com/send?phone=${config.reply.whatsapp}&text=${encodeURIComponent(text(photoLink))}`;
+  const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  useEffect(() => {
+    if (photo) return () => URL.revokeObjectURL(photo.url);
+  }, [photo]);
 
   const onFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     e.target.value = "";
     if (!f) return;
-    const img = new Image();
-    img.src = URL.createObjectURL(f);
-    try {
-      await img.decode();
-    } catch {
-      return;
-    }
+    // Re-encode to a reasonably sized JPEG up front, so the share on "send"
+    // happens instantly (phones only allow sharing right on the tap).
+    const file = await toJpeg(f).catch(() => null);
+    if (!file) return;
     sfx.sparkle();
-    setPhoto(img);
+    setPhoto({ file, url: URL.createObjectURL(file) });
+    setLink(undefined);
+    const upload = uploadSelfie(file);
+    uploadRef.current = upload;
+    upload.then((l) => uploadRef.current === upload && setLink(l));
     setPhase("edit");
-  };
-
-  // Re-render the card shortly after the photo or message changes, so it's
-  // ready the moment she taps "send" (sharing must happen right on the tap).
-  useEffect(() => {
-    if (!photo) return;
-    let cancelled = false;
-    const t = setTimeout(async () => {
-      const file = await renderCard(photo, msg);
-      if (!cancelled) setCard({ file, url: URL.createObjectURL(file) });
-    }, 300);
-    return () => {
-      cancelled = true;
-      clearTimeout(t);
-    };
-  }, [photo, msg]);
-
-  useEffect(() => {
-    if (card) return () => URL.revokeObjectURL(card.url);
-  }, [card]);
-
-  const download = () => {
-    if (!card) return;
-    const a = document.createElement("a");
-    a.href = card.url;
-    a.download = card.file.name;
-    a.click();
   };
 
   const celebrate = () => {
@@ -75,29 +57,33 @@ export function Reply({ next }: { next: () => void }) {
   };
 
   const send = async () => {
-    if (!card) return;
+    if (!photo || sending) return;
     sfx.whoosh();
-    if (navigator.canShare?.({ files: [card.file] })) {
+    setSending(true);
+    const photoLink = await uploadRef.current;
+    setSending(false);
+    if (photoLink) {
+      // Same-tab navigation isn't stopped by pop-up blockers or in-app browsers,
+      // and opens WhatsApp right in Hisham's chat with her message + photo ready.
+      setPhase("sent");
+      celebrate();
+      window.location.href = waUrl(photoLink);
+      return;
+    }
+    // The upload didn't work: hand the photo to the phone's share sheet instead.
+    const data: ShareData = { files: [photo.file], text: text() };
+    if (navigator.canShare?.(data)) {
       try {
-        await navigator.share({ files: [card.file], text, title: `${config.name}'s birthday 💛` });
-        setVia("share");
+        await navigator.share(data);
         setPhase("sent");
         celebrate();
       } catch (err) {
-        if ((err as Error).name !== "AbortError") {
-          download();
-          setVia("whatsapp");
-          setPhase("sent");
-        }
+        if ((err as Error).name !== "AbortError") setPhase("manual");
       }
       return;
     }
-    // No file sharing (e.g. most desktops): save the card and open his chat.
-    download();
-    window.open(waUrl, "_blank", "noopener");
-    setVia("whatsapp");
-    setPhase("sent");
-    celebrate();
+    // This browser can't share files (in-app browsers, most desktops).
+    setPhase("manual");
   };
 
   return (
@@ -114,7 +100,7 @@ export function Reply({ next }: { next: () => void }) {
             </Title>
             <Sub>
               Hisham wants to see the birthday girl right after the surprise. Take a selfie (or pick a photo) and send it to
-              him with a little message.
+              him on WhatsApp with a little message.
             </Sub>
             <motion.div
               className="selfie-frame"
@@ -138,35 +124,90 @@ export function Reply({ next }: { next: () => void }) {
         {phase === "edit" && photo && (
           <motion.div key="edit" className="center-col" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
             <Kicker>Looking gorgeous, as expected</Kicker>
-            <Title>Add a message for Hisham</Title>
-            <div className="reply-grid">
-              <motion.div className="card-preview" initial={{ rotate: -6, scale: 0.8 }} animate={{ rotate: -2, scale: 1 }}>
+            <Title>Send it to Hisham 💬</Title>
+
+            <div className="wa">
+              <div className="wa-head">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={card?.url ?? photo.src} alt="Your birthday card" />
-              </motion.div>
-              <div className="reply-form">
+                <img src={config.hisham.photo} alt="" />
+                <div>
+                  <b>{config.from} 💛</b>
+                  <small>online</small>
+                </div>
+              </div>
+
+              <div className="wa-body">
+                <motion.div className="wa-bubble" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={photo.url} alt="Your photo" />
+                  <p>{msg.trim() || "💛"}</p>
+                  <span className="wa-meta">
+                    {link === undefined ? "uploading… 🕓" : `${time} ✓✓`}
+                  </span>
+                </motion.div>
+              </div>
+
+              <div className="wa-chips">
+                {config.reply.suggestions.map((s) => (
+                  <button key={s} type="button" className="chip" onClick={() => setMsg(s)}>
+                    {s}
+                  </button>
+                ))}
+              </div>
+
+              <div className="wa-bar">
                 <textarea
                   value={msg}
                   maxLength={280}
-                  rows={4}
-                  placeholder="Write something to Hisham… 💌"
+                  rows={1}
+                  placeholder="Message"
                   onChange={(e) => setMsg(e.target.value)}
                 />
-                <div className="chips">
-                  {config.reply.suggestions.map((s) => (
-                    <button key={s} className="chip" onClick={() => setMsg(s)}>
-                      {s}
-                    </button>
-                  ))}
-                </div>
-                <Btn onClick={send} disabled={!card}>
-                  Send to Hisham on WhatsApp 💬
-                </Btn>
-                <button className="link-btn" onClick={() => setPhase("pick")}>
-                  ↺ Retake photo
+                <button type="button" className="wa-send" onClick={send} aria-label="Send on WhatsApp" aria-busy={sending}>
+                  {sending ? (
+                    <span className="wa-spin" aria-hidden />
+                  ) : (
+                    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden>
+                      <path fill="currentColor" d="M2 21 23 12 2 3v7l15 2-15 2z" />
+                    </svg>
+                  )}
                 </button>
               </div>
             </div>
+            <p className="hint">Tap ➤ and WhatsApp opens in Hisham&apos;s chat with your photo and message. Just hit send there.</p>
+
+            <button className="link-btn" onClick={() => setPhase("pick")}>
+              ↺ Change photo
+            </button>
+          </motion.div>
+        )}
+
+        {phase === "manual" && photo && (
+          <motion.div key="manual" className="center-col" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+            <Kicker>Almost there</Kicker>
+            <Title>Two quick taps 💛</Title>
+            <Sub>This browser can&apos;t attach photos to WhatsApp by itself, so let&apos;s do it together:</Sub>
+            <ol className="wa-steps">
+              <li>
+                <b>1.</b> Save your photo: press and hold it below, then <i>Save image</i> (or use the button).
+              </li>
+              <li>
+                <b>2.</b> Open Hisham&apos;s chat: your message is already typed. Tap 📎 to attach the photo, then send.
+              </li>
+            </ol>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className="wa-save" src={photo.url} alt="Your photo" />
+            <div className="flex flex-wrap gap-3 justify-center mt-6">
+              <a className="btn btn-ghost" href={photo.url} download={photo.file.name}>
+                ⬇️ Save photo
+              </a>
+              <a className="btn btn-primary" href={waUrl()} target="_blank" rel="noopener noreferrer" onClick={celebrate}>
+                💬 Open Hisham&apos;s WhatsApp
+              </a>
+            </div>
+            <button className="link-btn mt-6" onClick={() => setPhase("edit")}>
+              ← Back
+            </button>
           </motion.div>
         )}
 
@@ -182,25 +223,20 @@ export function Reply({ next }: { next: () => void }) {
             </motion.span>
             <Kicker>Delivered by Duck Express</Kicker>
             <Title>Sent with love 💛</Title>
-            <Sub>
-              {via === "share"
-                ? "Hisham is probably screaming at his phone right now. Thank you for being the best part of his life."
-                : "Your card was saved to your device. Attach it 📎 in the WhatsApp chat that just opened, and hit send!"}
-            </Sub>
+            <Sub>Hisham is probably screaming at his phone right now. Thank you for being the best part of his life.</Sub>
             <div className="flex flex-wrap gap-3 justify-center mt-6">
-              <a className="btn btn-primary" href={waUrl} target="_blank" rel="noopener noreferrer">
-                💬 Open Hisham&apos;s WhatsApp
-              </a>
-              <Btn variant="ghost" onClick={download}>
-                ⬇️ Save the card
-              </Btn>
+              {link && (
+                <a className="btn btn-primary" href={waUrl(link)}>
+                  💬 Open Hisham&apos;s WhatsApp again
+                </a>
+              )}
               <Btn variant="ghost" onClick={() => setPhase("edit")}>
                 ✏️ Send another
               </Btn>
+              <Btn variant="ghost" onClick={next}>
+                Replay the journey ↺
+              </Btn>
             </div>
-            <Btn className="mt-6" variant="ghost" onClick={next}>
-              Replay the journey ↺
-            </Btn>
           </motion.div>
         )}
       </AnimatePresence>
@@ -208,93 +244,33 @@ export function Reply({ next }: { next: () => void }) {
   );
 }
 
-// ---------- Card rendering ----------
-
-function fontVar(name: string, fallback: string) {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+/** Uploads the photo and resolves to its public link, or null if it fails (she then gets the share sheet). */
+async function uploadSelfie(file: File): Promise<string | null> {
+  try {
+    const res = await fetch("/api/selfie", { method: "POST", headers: { "content-type": "image/jpeg" }, body: file });
+    if (!res.ok) return null;
+    const { url } = (await res.json()) as { url?: string };
+    return url ?? null;
+  } catch {
+    return null;
+  }
 }
 
-function wrap(ctx: CanvasRenderingContext2D, text: string, maxWidth: number, maxLines: number) {
-  const lines: string[] = [];
-  for (const para of text.split("\n")) {
-    let line = "";
-    for (const word of para.split(/\s+/)) {
-      const test = line ? `${line} ${word}` : word;
-      if (ctx.measureText(test).width > maxWidth && line) {
-        lines.push(line);
-        line = word;
-      } else line = test;
-    }
-    lines.push(line);
+/** Downscales any picked image to a JPEG WhatsApp and every share sheet accept. */
+async function toJpeg(f: File, max = 1600): Promise<File> {
+  const img = new Image();
+  const src = URL.createObjectURL(f);
+  try {
+    img.src = src;
+    await img.decode();
+    const scale = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement("canvas");
+    c.width = Math.round(img.naturalWidth * scale);
+    c.height = Math.round(img.naturalHeight * scale);
+    c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
+    const blob = await new Promise<Blob>((res, rej) => c.toBlob((b) => (b ? res(b) : rej()), "image/jpeg", 0.9));
+    return new File([blob], `${config.name.toLowerCase()}-birthday.jpg`, { type: "image/jpeg" });
+  } finally {
+    URL.revokeObjectURL(src);
   }
-  if (lines.length > maxLines) {
-    lines.length = maxLines;
-    lines[maxLines - 1] = `${lines[maxLines - 1].replace(/\s+\S*$/, "")}…`;
-  }
-  return lines;
-}
-
-async function renderCard(photo: HTMLImageElement, message: string): Promise<File> {
-  const W = 1080;
-  const H = 1350;
-  const c = document.createElement("canvas");
-  c.width = W;
-  c.height = H;
-  const ctx = c.getContext("2d")!;
-  const hand = fontVar("--font-hand", "cursive");
-  const display = fontVar("--font-display", "serif");
-  await Promise.all([document.fonts.load(`64px ${hand}`), document.fonts.load(`700 40px ${display}`)]);
-
-  const bg = ctx.createLinearGradient(0, 0, W, H);
-  bg.addColorStop(0, "#ffe1ea");
-  bg.addColorStop(0.55, "#fff1dc");
-  bg.addColorStop(1, "#ffd9c4");
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, W, H);
-
-  ctx.font = "56px serif";
-  [["🦆", 70, 110], ["🌸", 960, 90], ["💛", 1000, 640], ["✨", 50, 700], ["🌷", 980, 1000], ["🦆", 60, 1060]].forEach(
-    ([e, x, y]) => ctx.fillText(e as string, x as number, y as number),
-  );
-
-  // Polaroid
-  ctx.save();
-  ctx.translate(W / 2, 520);
-  ctx.rotate((-2 * Math.PI) / 180);
-  ctx.shadowColor = "rgba(80,30,40,0.3)";
-  ctx.shadowBlur = 40;
-  ctx.shadowOffsetY = 18;
-  ctx.fillStyle = "#fffdf8";
-  ctx.fillRect(-420, -430, 840, 880);
-  ctx.shadowColor = "transparent";
-  const pw = 780;
-  const ph = 700;
-  const scale = Math.max(pw / photo.naturalWidth, ph / photo.naturalHeight);
-  const sw = pw / scale;
-  const sh = ph / scale;
-  ctx.drawImage(photo, (photo.naturalWidth - sw) / 2, (photo.naturalHeight - sh) / 2, sw, sh, -390, -400, pw, ph);
-  ctx.fillStyle = "#2b1b3f";
-  ctx.textAlign = "center";
-  ctx.font = `68px ${hand}`;
-  ctx.fillText(`${config.name} at ${AGE} 🎂`, 0, 390);
-  ctx.fillStyle = "rgba(255, 214, 120, 0.7)";
-  ctx.rotate((-4 * Math.PI) / 180);
-  ctx.fillRect(-90, -455, 180, 50);
-  ctx.restore();
-
-  // Message
-  ctx.textAlign = "center";
-  ctx.fillStyle = "#3b2a3f";
-  ctx.font = `58px ${hand}`;
-  const lines = wrap(ctx, message.trim() || "💛", 900, 3);
-  lines.forEach((l, i) => ctx.fillText(l, W / 2, 1070 + i * 62));
-  ctx.fillStyle = "#e2457a";
-  ctx.font = `50px ${hand}`;
-  ctx.fillText(`— ${config.name}, to ${config.from} 💛`, W / 2, 1090 + lines.length * 62);
-  ctx.fillStyle = "rgba(43,27,63,0.45)";
-  ctx.font = `700 26px ${display}`;
-  ctx.fillText(`${D} · ${M} · ${Y}`, W / 2, H - 40);
-
-  const blob = await new Promise<Blob>((res) => c.toBlob((b) => res(b!), "image/jpeg", 0.92));
-  return new File([blob], `${config.name.toLowerCase()}-birthday.jpg`, { type: "image/jpeg" });
 }

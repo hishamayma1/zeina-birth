@@ -1380,52 +1380,140 @@ body {
   font-size: 1.6rem;
   color: var(--plum);
 }
-.reply-grid {
-  display: grid;
-  gap: 26px;
-  align-items: center;
-  width: min(820px, 100%);
-  margin-top: 24px;
-}
-@media (min-width: 760px) {
-  .reply-grid { grid-template-columns: 1fr 1fr; }
-}
-.card-preview {
-  justify-self: center;
-  width: min(340px, 82vw);
-}
-.card-preview img {
-  width: 100%;
-  border-radius: 10px;
-  box-shadow: 0 30px 60px -18px rgb(80 30 40 / 0.5);
-}
-.reply-form {
+/* WhatsApp-style chat preview */
+.wa {
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: 14px;
+  width: min(420px, 100%);
+  margin-top: 22px;
+  overflow: hidden;
+  border-radius: 22px;
+  text-align: start;
+  background: #efe7dd;
+  box-shadow: 0 30px 60px -18px rgb(80 30 40 / 0.5);
 }
-.reply-form textarea {
+.wa-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  color: #fff;
+  background: #075e54;
+}
+.wa-head img {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  object-fit: cover;
+  background: #ccc;
+}
+.wa-head b {
+  display: block;
+  font-size: 1rem;
+}
+.wa-head small {
+  font-size: 0.78rem;
+  opacity: 0.8;
+}
+.wa-body {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 12px;
+  background:
+    radial-gradient(circle at 20% 30%, rgb(255 255 255 / 0.35) 0 2px, transparent 3px) 0 0 / 34px 34px,
+    #efe7dd;
+}
+.wa-bubble {
+  position: relative;
+  width: min(78%, 280px);
+  padding: 4px 4px 6px;
+  border-radius: 12px 0 12px 12px;
+  color: #111b21;
+  background: #d9fdd3;
+  box-shadow: 0 1px 1px rgb(0 0 0 / 0.12);
+}
+.wa-bubble img {
+  display: block;
   width: 100%;
-  padding: 14px 16px;
-  border-radius: 20px;
-  border: 1.5px solid var(--card-border);
-  background: rgb(255 255 255 / 0.75);
-  color: var(--plum);
-  font-family: var(--font-hand), cursive;
-  font-size: 1.5rem;
+  max-height: 340px;
+  border-radius: 9px;
+  object-fit: cover;
+}
+.wa-bubble p {
+  padding: 6px 8px 14px;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.wa-meta {
+  position: absolute;
+  right: 10px;
+  bottom: 5px;
+  font-size: 0.68rem;
+  color: #53bdeb;
+}
+.wa-chips {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: #efe7dd;
+}
+.wa-chips .chip {
+  flex: none;
+}
+.wa-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 8px 10px 10px;
+  background: #efe7dd;
+}
+.wa-bar textarea {
+  flex: 1;
+  min-width: 0;
+  max-height: 120px;
+  padding: 11px 16px;
+  border-radius: 24px;
+  color: #111b21;
+  background: #fff;
+  /* 16px stops iOS from zooming in when she taps the field. */
+  font-size: 16px;
   line-height: 1.3;
   resize: none;
   outline: none;
-  box-shadow: 0 10px 30px -14px rgb(80 30 40 / 0.35);
+  field-sizing: content;
 }
-.reply-form textarea:focus {
-  border-color: var(--rose);
+.wa-send {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  color: #fff;
+  background: #00a884;
+  cursor: pointer;
+  touch-action: manipulation;
 }
-.chips {
-  display: flex;
-  flex-wrap: wrap;
+.wa-send:active {
+  transform: scale(0.92);
+}
+.wa-steps {
+  display: grid;
   gap: 8px;
+  width: min(420px, 100%);
+  margin-top: 14px;
+  text-align: start;
+  color: var(--ink);
+}
+.wa-save {
+  width: min(260px, 70vw);
+  margin-top: 18px;
+  border-radius: 14px;
+  box-shadow: 0 20px 40px -14px rgb(80 30 40 / 0.5);
 }
 .chip {
   padding: 7px 12px;
@@ -1440,9 +1528,6 @@ body {
 .chip:hover {
   background: #fff;
 }
-.reply-form .btn {
-  white-space: normal;
-}
 .btn:disabled {
   opacity: 0.6;
   cursor: wait;
@@ -1456,4 +1541,15 @@ body {
 a.btn {
   display: inline-block;
   text-decoration: none;
+}
+.wa-spin {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgb(255 255 255 / 0.4);
+  border-top-color: #fff;
+  border-radius: 999px;
+  animation: wa-spin 0.8s linear infinite;
+}
+@keyframes wa-spin {
+  to { transform: rotate(360deg); }
 }
