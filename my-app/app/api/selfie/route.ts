@@ -1,8 +1,10 @@
-import { put } from "@vercel/blob";
+import { UTApi } from "uploadthing/server";
 
 const MAX_BYTES = 4 * 1024 * 1024;
 
-/** Stores her selfie in Vercel Blob and returns a public link to put in the WhatsApp message. */
+const utapi = new UTApi();
+
+/** Stores her selfie on UploadThing and returns its direct link for the WhatsApp message. */
 export async function POST(request: Request) {
   if (request.headers.get("content-type") !== "image/jpeg") {
     return Response.json({ error: "Only JPEG images are accepted." }, { status: 415 });
@@ -12,15 +14,10 @@ export async function POST(request: Request) {
     return Response.json({ error: "Image is empty or too large." }, { status: 413 });
   }
 
-  try {
-    const blob = await put("selfies/birthday.jpg", body, {
-      access: "public",
-      contentType: "image/jpeg",
-      addRandomSuffix: true,
-    });
-    return Response.json({ url: blob.url });
-  } catch (err) {
-    console.error("Selfie upload failed", err);
+  const { data, error } = await utapi.uploadFiles(new File([body], "birthday-selfie.jpg", { type: "image/jpeg" }));
+  if (error || !data) {
+    console.error("Selfie upload failed", error);
     return Response.json({ error: "Upload failed." }, { status: 500 });
   }
+  return Response.json({ url: data.ufsUrl });
 }

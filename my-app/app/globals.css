@@ -1487,6 +1487,7 @@ body {
   field-sizing: content;
 }
 .wa-send {
+  text-decoration: none;
   display: grid;
   place-items: center;
   flex: none;
@@ -1500,20 +1501,6 @@ body {
 }
 .wa-send:active {
   transform: scale(0.92);
-}
-.wa-steps {
-  display: grid;
-  gap: 8px;
-  width: min(420px, 100%);
-  margin-top: 14px;
-  text-align: start;
-  color: var(--ink);
-}
-.wa-save {
-  width: min(260px, 70vw);
-  margin-top: 18px;
-  border-radius: 14px;
-  box-shadow: 0 20px 40px -14px rgb(80 30 40 / 0.5);
 }
 .chip {
   padding: 7px 12px;
