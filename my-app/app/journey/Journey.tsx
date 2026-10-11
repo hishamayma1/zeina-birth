@@ -50,11 +50,13 @@ export function Journey() {
     if (n > 0 && n < CHAPTERS.length) setStep(n);
   }, []);
 
-  const next = () => {
+  const goTo = (i: number) => {
     sfx.whoosh();
-    setStep((s) => (s + 1) % CHAPTERS.length);
+    setStep(i);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const next = () => goTo((step + 1) % CHAPTERS.length);
 
   return (
     <div className={`journey ${ch.dark ? "is-dark" : "is-light"}`}>
@@ -86,8 +88,16 @@ export function Journey() {
       <header className="topbar">
         <ol className="chapters" aria-label="Journey progress">
           {CHAPTERS.map((c, i) => (
-            <li key={c.label} className={i === step ? "on" : i < step ? "done" : ""} title={c.label}>
-              <span>{c.icon}</span>
+            <li key={c.label} className={i === step ? "on" : i < step ? "done" : ""}>
+              <button
+                type="button"
+                title={c.label}
+                aria-label={`Go to ${c.label}`}
+                aria-current={i === step ? "step" : undefined}
+                onClick={() => i !== step && goTo(i)}
+              >
+                {c.icon}
+              </button>
             </li>
           ))}
         </ol>

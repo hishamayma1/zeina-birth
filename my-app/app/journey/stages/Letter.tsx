@@ -8,7 +8,8 @@ import { config } from "../config";
 import { duckMusic, sfx } from "../sound";
 import { Btn, Kicker, Sub, Title } from "../ui";
 
-const FULL = config.letter.join("\n\n");
+// Split by code point so emoji are never cut in half while typing.
+const FULL = Array.from(config.letter.join("\n\n"));
 
 export function Letter({ next }: { next: () => void }) {
   const [opened, setOpened] = useState(false);
@@ -24,7 +25,7 @@ export function Letter({ next }: { next: () => void }) {
   useEffect(() => {
     if (!opened || finished) return;
     const ch = FULL[typed];
-    const delay = ch === "\n" ? 350 : /[.,!?—]/.test(ch) ? 180 : 32;
+    const delay = ch === "\n" ? 350 : /[.,!?—،؟]/.test(ch) ? 180 : 32;
     const t = setTimeout(() => {
       if (typed % 3 === 0 && ch !== " ") sfx.type();
       setTyped((n) => n + 1);
@@ -84,25 +85,27 @@ export function Letter({ next }: { next: () => void }) {
           <motion.div
             key="paper"
             className="paper"
+            dir="rtl"
+            lang="ar"
             initial={{ y: 200, scaleY: 0.2, opacity: 0, rotateX: 50 }}
             animate={{ y: 0, scaleY: 1, opacity: 1, rotateX: 0 }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
             onClick={() => !finished && setTyped(FULL.length)}
           >
             <div className="paper-text">
-              {FULL.slice(0, typed)}
+              {FULL.slice(0, typed).join("")}
               {!finished && <span className="caret" />}
             </div>
             <AnimatePresence>
               {finished && (
                 <motion.div className="signature" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-                  <span>Forever yours,</span>
-                  <b>{config.from}</b>
+                  <span>{config.letterSignOff.line}</span>
+                  <b>{config.letterSignOff.name}</b>
                   <Heart size={22} />
                 </motion.div>
               )}
             </AnimatePresence>
-            {!finished && <p className="skip">tap to skip ✨</p>}
+            {!finished && <p className="skip">اضغطي للتخطي ✨</p>}
           </motion.div>
         )}
       </AnimatePresence>

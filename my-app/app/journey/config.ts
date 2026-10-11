@@ -48,7 +48,7 @@ export const config = {
 
   /** Chapter 3 — one reason per flower. */
   reasons: [
-    "The way you look at me when you think I'm not noticing.",
+    "The way your whole face lights up when you're truly happy.",
     "You turn ordinary days into tiny holidays.",
     "Your kindness — to people, to animals, and especially to ducks.",
     "How you get excited about the smallest, silliest things.",
@@ -82,16 +82,17 @@ export const config = {
   },
 
   /**
-   * Chapter 4 — photos. Put your images in public/photos/ with these names
-   * (or change the paths). Missing images show a cute placeholder.
+   * Chapter 4 — photos (files live in public/photos/). The first one is us,
+   * the rest are all her. Missing images show a cute placeholder.
    */
   memories: [
-    { src: "/photos/1.jpg", caption: "The day everything started ✨" },
-    { src: "/photos/2.jpg", caption: "Look at that smile. Illegal." },
-    { src: "/photos/3.jpg", caption: "My favorite place: next to you" },
-    { src: "/photos/4.jpg", caption: "We look good together, admit it" },
-    { src: "/photos/5.jpg", caption: "Proof that you're the cutest" },
-    { src: "/photos/6.jpg", caption: "More of these, please. Forever." },
+    { src: "/photos/me%20and%20her%20.jpeg", caption: "You and me. My favorite picture ever 💛" },
+    { src: "/photos/WhatsApp%20Image%202026-10-11%20at%202.43.15%20AM.jpeg", caption: "Look at that smile. Illegal." },
+    { src: "/photos/WhatsApp%20Image%202026-10-11%20at%202.48.18%20AM.jpeg", caption: "Proof that you're the cutest" },
+    { src: "/photos/WhatsApp%20Image%202026-10-11%20at%202.48.44%20AM.jpeg", caption: "How is one person this pretty?" },
+    { src: "/photos/WhatsApp%20Image%202026-10-11%20at%202.49.28%20AM.jpeg", caption: "The ducks are jealous. The elephants too 🐘" },
+    { src: "/photos/728473939_18463812163129931_5208731377112455114_n.jpg", caption: "My favorite view in the whole world" },
+    { src: "/photos/728543949_18463812136129931_2555397167417722619_n.jpg", caption: "More of you, please. Forever." },
   ],
 
   /**
@@ -129,7 +130,7 @@ export const config = {
       ],
       [
         "Every photo here is my favorite. Yes, all of them. That's how it works.",
-        "You look amazing in every single one. Me? I'm… present 😅",
+        "Only one of these has me in it. The rest is all you, as it should be 😌",
         "Let's fill a whole album this year. Deal?",
       ],
       [
@@ -179,14 +180,22 @@ export const config = {
     ],
   },
 
-  /** Chapter 7 — the letter. Each string is a paragraph. */
+  /** Chapter 7 — the letter (Arabic, shown right-to-left in the Zain font). Each string is a paragraph. */
   letter: [
-    "My dearest Zaina,",
-    "Happy birthday to the girl who makes my whole world softer, brighter, and a lot more full of ducks (and, yes, elephants).",
-    "Every year with you feels like a gift I didn't know I was allowed to have. You're the funniest person I know — you make me laugh when I'm tired, you make me braver when I'm scared, and you make me want to be better just by being you.",
-    "I hope this year gives you everything you've been wishing for — and I promise to be right there for all of it: the big moments, the small ones, and the random 2 a.m. duck videos, and every elephant video you send me at 3 a.m.",
-    "I love you. Today, tomorrow, and every 15th of October after this one.",
+    "اظن كفاية english لحد هنا",
+    "العربي هيعبر اكتر عن العايز اقولو ...مكنش ينفع ابدا يعدي يوم زي دا زيو زي اي مرة قبل كده فا رغم اني مش هعرف اشوفك حتي لو من بعيد .... كفاية حتي افرحك حتي من بعيد ...يارب بجد تكون فرحتك و عجبتك كان نفسي اعمل اكتر من كده ولله بس الحمدلله إن شاء الله بعد كده اجبلك الدنيا كلها يارب ...اوعي تكوني نسيتي تفصيلة في رحلة العيد ميلاد دي 😂😂😂...",
+    "عايز اقولك كل سنة ونتي طيبة و بخير و صحة دايما يارب و تفضل ضحكتك الحلوة دي منورة الدنيا كلها يارب و منحرمش منها ابدا بجد إن شاء الله العيد ميلادك الجي لو انا لسا عايش اكيد إن شاء الله هبقي معاكي و نحتفل بيه كتير اوي .",
+    "بحبك يا زينة و مفيش وقت ولا مسافات ممكن تغير دا جوايا ابدا يارب تكوني نتي كمان بتحبيني حتي نص ال في قلبي ليكي هبقي راضي جدا ولله ...بتمنالك كل الخير و الفرحة من قلبي ولله ربنا العالم دا حقيقي و يارب اشوفك علي خير يارب ...",
+    "بصراحه حاولت اشوفك من بعيد كذا مره بس حظي وحش تقريباً (اخر مرة ساعة عيد ميلاد ريم بصراحه)😂😂😂😂 بس ان شاء الله اشوفك علي خير يارب ...",
+    "مش عايزك ابدا مضيقة مني او من اي حاجة و اي وقت بس تحسي انك مضيقة صدقيني هبقي موجود اسمعك و احل معاكي ولله اكيد ...(ولو مش مضايقة كلميني برضو)",
+    "خلي بالك من نفسك ال ماسج و ال site دا هيفضلو موجودين دايما إن شاء الله لو انا دخلت الجيش ممكن يفكرك بيا إن شاء الله هتوحشيني اوي اكيد ونتي اكبر سبب مش عايز ادخل عشانو عشان متوحشنيش اوي كده ونتي اصلا وحشاني من غير مدخل ...",
+    "عارف ان يمكن قلت كلام دلوقتي مينفعش يتقال ممكن يضايقك بس يعني سماح المراه دي عيد ميلاد و كده ...",
+    "خلي بالك من نفسك يا زينة و من تصرفاتك و من صحابك و من طريقتك و من كل حاجة انا عارف انك احسن بنت في الدنيا كلها بس اكيد وارد تنسي او متبقيش عارفة الصح و الغلط بس واثق فيكي انك عمرك ما هتعملي حاجة تضري بيها نفسك او تضرني برضو اكيد لو ضريتي نفسك ...",
+    "يارب اكون بسطك الشوية دول ...",
+    "بحبك يا زينة البنات كلهم❤️",
   ],
+  /** Signature under the letter. */
+  letterSignOff: { line: "ليكي دايماً،", name: "هشام" },
 } as const;
 
 export type Config = typeof config;

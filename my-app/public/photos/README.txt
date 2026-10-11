@@ -1,1 +1,1 @@
-Put your photos here named 1.jpg ... 6.jpg (or edit the paths in app/journey/config.ts).
+Photos are named in app/journey/config.ts (memories). The first is the two of us, the rest are her.

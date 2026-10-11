@@ -86,15 +86,24 @@ body {
 .chapters {
   display: flex;
   gap: 6px;
+  min-width: 0;
   padding: 6px 10px;
   border-radius: 999px;
   background: var(--card);
   border: 1px solid var(--card-border);
   backdrop-filter: blur(14px);
 }
+/* Small phones: let the icons scroll sideways instead of overflowing the screen. */
+@media (max-width: 480px) {
+  .chapters {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+}
 .chapters li {
   display: grid;
   place-items: center;
+  flex: none;
   width: 26px;
   height: 26px;
   border-radius: 999px;
@@ -113,6 +122,19 @@ body {
   background: var(--accent);
   transform: scale(1.15);
   box-shadow: 0 0 18px var(--accent);
+}
+.chapters button {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  cursor: pointer;
+}
+.chapters li:hover {
+  opacity: 1;
+  filter: none;
+  transform: scale(1.15);
 }
 .mute {
   width: 42px;
@@ -1040,7 +1062,7 @@ body {
   width: min(640px, 100%);
   padding: clamp(26px, 6vw, 52px);
   border-radius: 6px;
-  text-align: left;
+  text-align: start;
   color: #3b2a3f;
   background: #fffaf2;
   box-shadow: 0 40px 80px -20px rgb(0 0 0 / 0.6), 0 0 0 1px rgb(255 255 255 / 0.3);
@@ -1048,8 +1070,8 @@ body {
   cursor: pointer;
 }
 .paper-text {
-  font-family: var(--font-hand), cursive;
-  font-size: clamp(1.45rem, 3.6vw, 1.85rem);
+  font-family: var(--font-arabic), var(--font-hand), sans-serif;
+  font-size: clamp(1.3rem, 3.4vw, 1.6rem);
   line-height: 2.4rem;
   white-space: pre-wrap;
   background: linear-gradient(transparent calc(2.4rem - 2px), rgb(180 140 160 / 0.3) 0) 0 0 / 100% 2.4rem;
@@ -1072,7 +1094,7 @@ body {
   align-items: flex-end;
   gap: 2px;
   margin-top: 22px;
-  font-family: var(--font-hand), cursive;
+  font-family: var(--font-arabic), var(--font-hand), sans-serif;
   font-size: 1.5rem;
 }
 .signature b {
