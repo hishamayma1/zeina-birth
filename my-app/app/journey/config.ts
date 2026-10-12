@@ -5,7 +5,7 @@ export const config = {
   /** Her birth date (YYYY-MM-DD). */
   birthDate: "2004-10-15",
   /** The birthday being celebrated. Her age is calculated from this. */
-  celebrationDate: "2027-10-15",
+  celebrationDate: "2026-10-15",
   /** How you sign the final letter. */
   from: "Hisham",
 
